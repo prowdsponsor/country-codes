@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable, OverloadedStrings, NoImplicitPrelude, PatternGuards  #-}
+{-# LANGUAGE DeriveDataTypeable, OverloadedStrings, NoImplicitPrelude, PatternGuards, FlexibleInstances, MultiParamTypeClasses #-}
 -- | This file is generated from the Wikipedia page
 -- <http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>
 module Data.CountryCodes.ISO31661 (
@@ -16,6 +16,7 @@ import           Data.Aeson
 import           Data.Typeable
 import qualified Data.Text as T
 import           Prelude (Show,Read,Eq,Ord,Bounded,Enum,error,($),(++),Maybe(..),(.),fail)
+import           Text.Shakespeare.I18N
 
 data CountryCode = 
     AD
@@ -1298,3 +1299,12 @@ instance FromJSON CountryCode where
   parseJSON (String s)
     | Just a <- fromMText s=pure a
   parseJSON _ =fail "CountryCode"
+
+-- | show user readable name
+instance ToMessage CountryCode where
+  toMessage = toName
+
+-- | show user readable name, in english (ignoring locale for now)
+instance RenderMessage master CountryCode where
+  renderMessage _ _ = toName
+

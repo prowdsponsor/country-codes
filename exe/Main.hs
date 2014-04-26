@@ -51,7 +51,7 @@ extract txt =
 generate :: [(T.Text,T.Text)] -> T.Text
 generate assocs = 
   let
-    header = "{-# LANGUAGE DeriveDataTypeable, OverloadedStrings, NoImplicitPrelude, PatternGuards  #-}" <> nl <>
+    header = "{-# LANGUAGE DeriveDataTypeable, OverloadedStrings, NoImplicitPrelude, PatternGuards, FlexibleInstances, MultiParamTypeClasses #-}" <> nl <>
              "-- | This file is generated from the Wikipedia page" <> nl <>
              "-- <http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>"  <> nl <>
              "module Data.CountryCodes.ISO31661 ("   <> nl <>
@@ -69,6 +69,7 @@ generate assocs =
              "import           Data.Typeable" <> nl <>
              "import qualified Data.Text as T" <> nl <>
              "import           Prelude (Show,Read,Eq,Ord,Bounded,Enum,error,($),(++),Maybe(..),(.),fail)" <> nl <>
+             "import           Text.Shakespeare.I18N" <> nl <>
              nl
     cons = snd (foldl' constructor (True, header) assocs) <> nl <> 
                   "  deriving (Show,Read,Eq,Ord,Bounded,Enum,Typeable)"
@@ -107,8 +108,15 @@ generate assocs =
             "instance FromJSON CountryCode where" <> nl <>
             "  parseJSON (String s)" <> nl <>
             "    | Just a <- fromMText s=pure a" <> nl <>
-            "  parseJSON _ =fail \"CountryCode\"" <> nl
-  in json
+            "  parseJSON _ =fail \"CountryCode\"" <> nl <> nl
+    sp  = json <>
+            "-- | show user readable name" <> nl <>
+            "instance ToMessage CountryCode where" <> nl <>
+            "  toMessage = toName" <> nl <> nl <>
+            "-- | show user readable name, in english (ignoring locale for now)" <> nl <>
+            "instance RenderMessage master CountryCode where" <> nl <>
+            "  renderMessage _ _ = toName" <> nl <> nl            
+  in sp
     
   where 
     constructor :: (Bool,T.Text) -> (T.Text,T.Text) -> (Bool,T.Text)
