@@ -99,7 +99,7 @@ generate assocs =
     toNames = foldl' toName (fromNames <> nl  <> nl <> 
                  "-- | Get the user readable name." <> nl <> 
                  "toName :: CountryCode -> T.Text") assocs
-    json = toNames <>
+    json = toNames <> nl <> nl <>
             "-- | to json: as a simple string" <> nl <>
             "instance ToJSON CountryCode where" <> nl <>
             "  toJSON =toJSON . toText" <> nl <>

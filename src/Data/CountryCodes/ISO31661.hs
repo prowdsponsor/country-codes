@@ -1290,7 +1290,9 @@ toName YE = "Yemen"
 toName YT = "Mayotte"
 toName ZA = "South Africa"
 toName ZM = "Zambia"
-toName ZW = "Zimbabwe"-- | to json: as a simple string
+toName ZW = "Zimbabwe"
+
+-- | to json: as a simple string
 instance ToJSON CountryCode where
   toJSON =toJSON . toText
 
