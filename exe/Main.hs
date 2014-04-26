@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings, ScopedTypeVariables #-}
+-- | generate the ISO31661.hs file from the wikipedia html file
 module Main where
 
 import Text.HTML.TagSoup
@@ -9,15 +10,21 @@ import Data.Maybe (mapMaybe)
 import Data.Monoid ((<>))
 import Data.List (foldl')
 
+
+-- | entry point
 main :: IO()
 main = do
+  -- read from a local version
   txt <- T.readFile "data/ISO 3166-1 alpha-2 - Wikipedia, the free encyclopedia.html"
+  -- extract data
   let assocs = extract txt
+  -- generate Haskell code
   let haskell=generate assocs
+  -- write file
   T.writeFile "src/Data/CountryCodes/ISO31661.hs" haskell
   return ()  
   
-  
+-- | extract tuples (code,name) from wikipedia file
 extract :: T.Text -> [(T.Text,T.Text)]
 extract txt =
   let tts=parseTags txt
@@ -40,6 +47,7 @@ extract txt =
                     in Just (cid,name)
                     ) rows
   
+-- | generate haskell code
 generate :: [(T.Text,T.Text)] -> T.Text
 generate assocs = 
   let
@@ -115,5 +123,6 @@ generate assocs =
     toName :: T.Text -> (T.Text,T.Text) -> T.Text
     toName acc (i,n) = acc <> nl <> "toName " <> i <> " = \"" <> n <> "\""
     
+-- | new line
 nl :: T.Text    
 nl = "\n"
