@@ -4,12 +4,14 @@ module Main where
 
 import Text.HTML.TagSoup
 
-import qualified Data.Text as T
-import qualified Data.Text.IO as T
+import Data.Function (on)
+import Data.List (foldl',sortBy)
 import Data.Maybe (mapMaybe)
 import Data.Monoid ((<>))
-import Data.List (foldl')
 
+import qualified Data.Text as T
+import qualified Data.Text.IO as T
+import Data.Tuple (swap)
 
 -- | entry point
 main :: IO()
@@ -56,9 +58,10 @@ generate assocs =
              "-- <http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>"  <> nl <>
              "module Data.CountryCodes.ISO31661 ("   <> nl <>
              "    CountryCode(..)"     <> nl <>
-             "  , fromMText"            <> nl <>
+             "  , countryList"         <> nl <>
+             "  , fromMText"           <> nl <>
              "  , fromText"            <> nl <>
-             "  , fromMName"            <> nl <>           
+             "  , fromMName"           <> nl <>           
              "  , fromName"            <> nl <>
              "  , toText"              <> nl <>
              "  , toName"              <> nl <>
@@ -99,7 +102,13 @@ generate assocs =
     toNames = foldl' toName (fromNames <> nl  <> nl <> 
                  "-- | Get the user readable name." <> nl <> 
                  "toName :: CountryCode -> T.Text") assocs
-    json = toNames <> nl <> nl <>
+    countryList = snd (foldl' toList ("", toNames <> nl <> nl <>
+                  "-- | list of names sorted by alphabetical order, with country code" <> nl <>
+                  "-- this is ready to be used in a yesod selectField, for example" <> nl <>
+                  "countryList :: [(T.Text,CountryCode)]" <> nl <>
+                  "countryList = [")
+                  $ sortBy (compare `on` fst) $ map swap assocs) <> "              ]"
+    json = countryList <> nl <> nl <>
             "-- | to json: as a simple string" <> nl <>
             "instance ToJSON CountryCode where" <> nl <>
             "  toJSON =toJSON . toText" <> nl <>
@@ -130,6 +139,8 @@ generate assocs =
     fromName acc (i,n) = acc <> nl <> "fromMName \"" <> n <> "\" = Just " <> i
     toName :: T.Text -> (T.Text,T.Text) -> T.Text
     toName acc (i,n) = acc <> nl <> "toName " <> i <> " = \"" <> n <> "\""
+    toList :: (T.Text,T.Text) -> (T.Text,T.Text) -> (T.Text,T.Text)
+    toList (sep,acc) (n,i) = (nl <> "              ,",acc <> sep <> "(\"" <> n <> "\"," <> i <> ")")
     
 -- | new line
 nl :: T.Text    
