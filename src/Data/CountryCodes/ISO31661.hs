@@ -1556,11 +1556,7 @@ instance FromJSON CountryCode where
     | Just a <- fromMText s=pure a
   parseJSON _ =fail "CountryCode"
 
--- | show user readable name
-instance ToMessage CountryCode where
-  toMessage = toName
-
--- | show user readable name, in english (ignoring locale for now)
+-- | show user readable name, in English (ignoring locale for now)
 instance RenderMessage master CountryCode where
   renderMessage _ _ = toName
 

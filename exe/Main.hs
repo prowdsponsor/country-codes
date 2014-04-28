@@ -119,10 +119,7 @@ generate assocs =
             "    | Just a <- fromMText s=pure a" <> nl <>
             "  parseJSON _ =fail \"CountryCode\"" <> nl <> nl
     sp  = json <>
-            "-- | show user readable name" <> nl <>
-            "instance ToMessage CountryCode where" <> nl <>
-            "  toMessage = toName" <> nl <> nl <>
-            "-- | show user readable name, in english (ignoring locale for now)" <> nl <>
+            "-- | show user readable name, in English (ignoring locale for now)" <> nl <>
             "instance RenderMessage master CountryCode where" <> nl <>
             "  renderMessage _ _ = toName" <> nl <> nl            
   in sp
