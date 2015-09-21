@@ -1,5 +1,5 @@
 name:           country-codes
-version:        0.1.2
+version:        0.1.3
 cabal-version:  >= 1.8
 build-type:     Simple
 author:         JP Moresmau <jpmoresmau@gmail.com>
