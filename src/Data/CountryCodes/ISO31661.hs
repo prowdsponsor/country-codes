@@ -13,10 +13,11 @@ module Data.CountryCodes.ISO31661 (
 ) where
 
 import Control.Applicative (pure)
+import Control.DeepSeq (NFData(..))
 import           Data.Aeson
 import           Data.Typeable
 import qualified Data.Text as T
-import           Prelude (Show,Read,Eq,Ord,Bounded,Enum,error,($),(++),Maybe(..),(.),fail)
+import           Prelude (Show,Read,Eq,Ord,Bounded,Enum,error,($),(++),Maybe(..),(.),fail,seq)
 import           Text.Shakespeare.I18N
 
 data CountryCode = 
@@ -1560,3 +1561,6 @@ instance FromJSON CountryCode where
 instance RenderMessage master CountryCode where
   renderMessage _ _ = toName
 
+-- | Allow the deep evaluation of CountryCode with `deepseq`
+instance NFData CountryCode where
+  rnf a = a `seq` ()
