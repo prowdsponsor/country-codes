@@ -12,3 +12,4 @@ cabal.config
 .dist-buildwrapper
 .project
 .stack-work
+*.history
